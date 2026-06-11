@@ -1,98 +1,114 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Anuprit Patil's Board Mastery</title>
-<style>
-body{
-font-family:Arial,sans-serif;
-background:#0f172a;
-color:white;
-text-align:center;
-padding:50px;
+// DARK MODE
+function toggleTheme(){
+  document.body.classList.toggle("light");
+  localStorage.setItem("theme", document.body.classList.contains("light") ? "light":"dark");
 }
-h1{
-font-size:2.5rem;
+
+window.onload = () => {
+  if(localStorage.getItem("theme")==="light"){
+    document.body.classList.add("light");
+  }
+  loadTasks();
+  loadQuizHistory();
 }
-.card{
-background:#1e293b;
-padding:20px;
-border-radius:15px;
-margin:20px auto;
-max-width:300px;
+
+// ---------------- STUDY PLANNER ----------------
+function addTask(){
+  let task = document.getElementById("taskInput").value;
+  if(!task) return;
+
+  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  tasks.push({text:task,done:false});
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  document.getElementById("taskInput").value="";
+  loadTasks();
 }
-</style>
-</head>
-<body>
 
-<h1>ANUPRIT PATIL'S BOARD MASTERY</h1>
+function loadTasks(){
+  let list = document.getElementById("taskList");
+  if(!list) return;
+  list.innerHTML="";
 
-<p>Plan Smart. Study Deep. Master Boards.</p>
+  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
 
-<div class="card">
-<h2>📚 Study Planner</h2>
-<p><div id="home">
+  tasks.forEach((t,i)=>{
+    let div = document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
+      <span style="text-decoration:${t.done?'line-through':'none'}">${t.text}</span>
+      <button onclick="toggleTask(${i})">✔</button>
+      <button onclick="deleteTask(${i})">❌</button>
+    `;
+    list.appendChild(div);
+  });
+}
 
-<div class="card" onclick="openSection('planner')">
-<h2>📚 Study Planner</h2>
-<p>Open Planner</p>
-</div>
+function toggleTask(i){
+  let tasks = JSON.parse(localStorage.getItem("tasks"));
+  tasks[i].done=!tasks[i].done;
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  loadTasks();
+}
 
-<div class="card" onclick="openSection('quiz')">
-<h2>🎯 Quiz Arena</h2>
-<p>Start Test</p>
-</div>
+function deleteTask(i){
+  let tasks = JSON.parse(localStorage.getItem("tasks"));
+  tasks.splice(i,1);
+  localStorage.setItem("tasks",JSON.stringify(tasks));
+  loadTasks();
+}
 
-<div class="card" onclick="openSection('dashboard')">
-<h2>📈 Dashboard</h2>
-<p>View Progress</p>
-</div>
+// ---------------- QUIZ SYSTEM ----------------
+let currentQuiz = [];
+let score = 0;
+let index = 0;
 
-</div></p>
-</div>
+const quizzes = {
+  science:[
+    {q:"H2O is?",a:["Water","Oxygen","Hydrogen"],c:0},
+    {q:"Plant food process?",a:["Respiration","Photosynthesis","Digestion"],c:1}
+  ],
+  math:[
+    {q:"x² + 5x + 6 roots?",a:["-2,-3","2,3","1,6"],c:0}
+  ]
+};
 
-<div class="card">
-<h2>🎯 Quiz Arena</h2>
-<p><div id="home">
+function startQuiz(type){
+  currentQuiz = quizzes[type];
+  score=0;
+  index=0;
+  showQuestion();
+}
 
-<div class="card" onclick="openSection('planner')">
-<h2>📚 Study Planner</h2>
-<p>Open Planner</p>
-</div>
+function showQuestion(){
+  let box = document.getElementById("quizBox");
+  if(index>=currentQuiz.length){
+    saveScore();
+    box.innerHTML=`<h2>Score: ${score}/${currentQuiz.length}</h2>`;
+    return;
+  }
 
-<div class="card" onclick="openSection('quiz')">
-<h2>🎯 Quiz Arena</h2>
-<p>Start Test</p>
-</div>
+  let q = currentQuiz[index];
+  box.innerHTML = `<h3>${q.q}</h3>` +
+  q.a.map((opt,i)=>
+    `<button onclick="answer(${i})">${opt}</button>`
+  ).join("<br>");
+}
 
-<div class="card" onclick="openSection('dashboard')">
-<h2>📈 Dashboard</h2>
-<p>View Progress</p>
-</div>
+function answer(i){
+  if(i===currentQuiz[index].c) score++;
+  index++;
+  showQuestion();
+}
 
-</div></p>
-</div>
+function saveScore(){
+  let scores = JSON.parse(localStorage.getItem("scores")||"[]");
+  scores.push(score);
+  localStorage.setItem("scores",JSON.stringify(scores));
+}
 
-<div class="card">
-<h2>📈 Dashboard</h2>
-<p><div id="home">
-
-<div class="card" onclick="openSection('planner')">
-<h2>📚 Study Planner</h2>
-<p>Open Planner</p>
-</div>
-
-<div class="card" onclick="openSection('quiz')">
-<h2>🎯 Quiz Arena</h2>
-<p>Start Test</p>
-</div>
-
-<div class="card" onclick="openSection('dashboard')">
-<h2>📈 Dashboard</h2>
-<p>View Progress</p>
-</div>
-
-</div></p>
-</div>
-
-</body>
-</html>
+function loadQuizHistory(){
+  let s = JSON.parse(localStorage.getItem("scores")||"[]");
+  let box = document.getElementById("history");
+  if(!box) return;
+  box.innerHTML = "Past Scores: " + s.join(", ");
+}
