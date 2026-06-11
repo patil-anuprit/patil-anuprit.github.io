@@ -1,166 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Boards Mastery | Anuprit Patil</title>
-
+<title>Anuprit Patil's Board Mastery</title>
 <style>
 body{
-font-family:Arial;
+font-family:Arial,sans-serif;
 background:#0f172a;
 color:white;
-margin:0;
 text-align:center;
+padding:50px;
 }
-
 h1{
-color:#38bdf8;
-padding:20px;
+font-size:2.5rem;
 }
-
 .card{
 background:#1e293b;
-margin:15px auto;
 padding:20px;
 border-radius:15px;
+margin:20px auto;
 max-width:300px;
-cursor:pointer;
-transition:0.3s;
-}
-
-.card:hover{
-transform:scale(1.05);
-background:#334155;
-}
-
-.section{
-display:none;
-padding:20px;
-}
-
-input{
-padding:10px;
-margin:5px;
-width:80%;
-border-radius:8px;
-border:none;
-}
-
-button{
-padding:10px;
-margin-top:10px;
-border:none;
-border-radius:8px;
-background:#38bdf8;
-cursor:pointer;
 }
 </style>
-
 </head>
-
 <body>
 
-<h1>ANUPRIT PATIL - BOARDS MASTERY</h1>
+<h1>ANUPRIT PATIL'S BOARD MASTERY</h1>
 
-<!-- HOME -->
-<div id="home">
+<p>Plan Smart. Study Deep. Master Boards.</p>
 
-<div class="card" onclick="openSection('planner')">
-📚 Study Planner
+<div class="card">
+<h2>📚 Study Planner</h2>
+<p>Coming Soon</p>
 </div>
 
-<div class="card" onclick="openSection('quiz')">
-🎯 Quiz Arena
+<div class="card">
+<h2>🎯 Quiz Arena</h2>
+<p>Coming Soon</p>
 </div>
 
-<div class="card" onclick="openSection('dashboard')">
-📈 Dashboard
+<div class="card">
+<h2>📈 Dashboard</h2>
+<p>Coming Soon</p>
 </div>
-
-</div>
-
-<!-- PLANNER -->
-<div id="planner" class="section">
-<h2>Study Planner</h2>
-
-<input id="task" placeholder="Enter task">
-<br>
-<button onclick="addTask()">Add</button>
-
-<ul id="list"></ul>
-
-<br>
-<button onclick="goHome()">Back</button>
-</div>
-
-<!-- QUIZ -->
-<div id="quiz" class="section">
-<h2>Quiz</h2>
-
-<p>2 + 2 = ?</p>
-<input id="q1">
-
-<p>Capital of India?</p>
-<input id="q2">
-
-<button onclick="check()">Submit</button>
-
-<p id="result"></p>
-
-<br>
-<button onclick="goHome()">Back</button>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" class="section">
-<h2>Dashboard</h2>
-<p id="stats">No activity yet</p>
-
-<br>
-<button onclick="goHome()">Back</button>
-</div>
-
-<script>
-
-// OPEN SECTION
-function openSection(id){
-document.getElementById("home").style.display="none";
-document.getElementById(id).style.display="block";
-}
-
-// GO HOME
-function goHome(){
-document.getElementById("home").style.display="block";
-document.querySelectorAll(".section").forEach(s=>{
-s.style.display="none";
-});
-}
-
-// ADD TASK
-function addTask(){
-let task=document.getElementById("task").value;
-if(task==="") return;
-
-let li=document.createElement("li");
-li.innerText=task;
-document.getElementById("list").appendChild(li);
-
-document.getElementById("task").value="";
-}
-
-// QUIZ CHECK
-function check(){
-let score=0;
-
-if(document.getElementById("q1").value=="4") score++;
-if(document.getElementById("q2").value.toLowerCase()=="delhi") score++;
-
-document.getElementById("result").innerText="Score: "+score+"/2";
-document.getElementById("stats").innerText="Latest Score: "+score+"/2";
-
-openSection("dashboard");
-}
-
-</script>
 
 </body>
 </html>
