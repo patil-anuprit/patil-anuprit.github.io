@@ -1,114 +1,166 @@
-// DARK MODE
-function toggleTheme(){
-  document.body.classList.toggle("light");
-  localStorage.setItem("theme", document.body.classList.contains("light") ? "light":"dark");
+<!DOCTYPE html>
+<html>
+<head>
+<title>Boards Mastery | Anuprit Patil</title>
+
+<style>
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+margin:0;
+text-align:center;
 }
 
-window.onload = () => {
-  if(localStorage.getItem("theme")==="light"){
-    document.body.classList.add("light");
-  }
-  loadTasks();
-  loadQuizHistory();
+h1{
+color:#38bdf8;
+padding:20px;
 }
 
-// ---------------- STUDY PLANNER ----------------
+.card{
+background:#1e293b;
+margin:15px auto;
+padding:20px;
+border-radius:15px;
+max-width:300px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.05);
+background:#334155;
+}
+
+.section{
+display:none;
+padding:20px;
+}
+
+input{
+padding:10px;
+margin:5px;
+width:80%;
+border-radius:8px;
+border:none;
+}
+
+button{
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#38bdf8;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>ANUPRIT PATIL - BOARDS MASTERY</h1>
+
+<!-- HOME -->
+<div id="home">
+
+<div class="card" onclick="openSection('planner')">
+📚 Study Planner
+</div>
+
+<div class="card" onclick="openSection('quiz')">
+🎯 Quiz Arena
+</div>
+
+<div class="card" onclick="openSection('dashboard')">
+📈 Dashboard
+</div>
+
+</div>
+
+<!-- PLANNER -->
+<div id="planner" class="section">
+<h2>Study Planner</h2>
+
+<input id="task" placeholder="Enter task">
+<br>
+<button onclick="addTask()">Add</button>
+
+<ul id="list"></ul>
+
+<br>
+<button onclick="goHome()">Back</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="section">
+<h2>Quiz</h2>
+
+<p>2 + 2 = ?</p>
+<input id="q1">
+
+<p>Capital of India?</p>
+<input id="q2">
+
+<button onclick="check()">Submit</button>
+
+<p id="result"></p>
+
+<br>
+<button onclick="goHome()">Back</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="section">
+<h2>Dashboard</h2>
+<p id="stats">No activity yet</p>
+
+<br>
+<button onclick="goHome()">Back</button>
+</div>
+
+<script>
+
+// OPEN SECTION
+function openSection(id){
+document.getElementById("home").style.display="none";
+document.getElementById(id).style.display="block";
+}
+
+// GO HOME
+function goHome(){
+document.getElementById("home").style.display="block";
+document.querySelectorAll(".section").forEach(s=>{
+s.style.display="none";
+});
+}
+
+// ADD TASK
 function addTask(){
-  let task = document.getElementById("taskInput").value;
-  if(!task) return;
+let task=document.getElementById("task").value;
+if(task==="") return;
 
-  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-  tasks.push({text:task,done:false});
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  document.getElementById("taskInput").value="";
-  loadTasks();
+let li=document.createElement("li");
+li.innerText=task;
+document.getElementById("list").appendChild(li);
+
+document.getElementById("task").value="";
 }
 
-function loadTasks(){
-  let list = document.getElementById("taskList");
-  if(!list) return;
-  list.innerHTML="";
+// QUIZ CHECK
+function check(){
+let score=0;
 
-  let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+if(document.getElementById("q1").value=="4") score++;
+if(document.getElementById("q2").value.toLowerCase()=="delhi") score++;
 
-  tasks.forEach((t,i)=>{
-    let div = document.createElement("div");
-    div.className="card";
-    div.innerHTML=`
-      <span style="text-decoration:${t.done?'line-through':'none'}">${t.text}</span>
-      <button onclick="toggleTask(${i})">✔</button>
-      <button onclick="deleteTask(${i})">❌</button>
-    `;
-    list.appendChild(div);
-  });
+document.getElementById("result").innerText="Score: "+score+"/2";
+document.getElementById("stats").innerText="Latest Score: "+score+"/2";
+
+openSection("dashboard");
 }
 
-function toggleTask(i){
-  let tasks = JSON.parse(localStorage.getItem("tasks"));
-  tasks[i].done=!tasks[i].done;
-  localStorage.setItem("tasks",JSON.stringify(tasks));
-  loadTasks();
-}
+</script>
 
-function deleteTask(i){
-  let tasks = JSON.parse(localStorage.getItem("tasks"));
-  tasks.splice(i,1);
-  localStorage.setItem("tasks",JSON.stringify(tasks));
-  loadTasks();
-}
-
-// ---------------- QUIZ SYSTEM ----------------
-let currentQuiz = [];
-let score = 0;
-let index = 0;
-
-const quizzes = {
-  science:[
-    {q:"H2O is?",a:["Water","Oxygen","Hydrogen"],c:0},
-    {q:"Plant food process?",a:["Respiration","Photosynthesis","Digestion"],c:1}
-  ],
-  math:[
-    {q:"x² + 5x + 6 roots?",a:["-2,-3","2,3","1,6"],c:0}
-  ]
-};
-
-function startQuiz(type){
-  currentQuiz = quizzes[type];
-  score=0;
-  index=0;
-  showQuestion();
-}
-
-function showQuestion(){
-  let box = document.getElementById("quizBox");
-  if(index>=currentQuiz.length){
-    saveScore();
-    box.innerHTML=`<h2>Score: ${score}/${currentQuiz.length}</h2>`;
-    return;
-  }
-
-  let q = currentQuiz[index];
-  box.innerHTML = `<h3>${q.q}</h3>` +
-  q.a.map((opt,i)=>
-    `<button onclick="answer(${i})">${opt}</button>`
-  ).join("<br>");
-}
-
-function answer(i){
-  if(i===currentQuiz[index].c) score++;
-  index++;
-  showQuestion();
-}
-
-function saveScore(){
-  let scores = JSON.parse(localStorage.getItem("scores")||"[]");
-  scores.push(score);
-  localStorage.setItem("scores",JSON.stringify(scores));
-}
-
-function loadQuizHistory(){
-  let s = JSON.parse(localStorage.getItem("scores")||"[]");
-  let box = document.getElementById("history");
-  if(!box) return;
-  box.innerHTML = "Past Scores: " + s.join(", ");
-}
+</body>
+</html>
